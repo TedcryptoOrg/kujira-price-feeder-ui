@@ -1,18 +1,18 @@
-import React, {useEffect, useState } from 'react';
+import React, {useEffect, useState} from 'react';
 import Box from '@mui/material/Box';
 import Grid from '@mui/material/Grid';
 import Button from '@mui/material/Button';
 import Typography from '@mui/material/Typography';
-import Snackbar from '@mui/material/Snackbar';
-import MuiAlert, { AlertProps } from '@mui/material/Alert';
 import {ServerConfig, Account, GlobalConfig, Rpc, Keyring, KujiraPriceFeederConfig} from "../../interfaces";
 import AccountConfigForm from "./AccountConfigForm";
 import RpcConfigForm from "./RpcConfigForm";
 import GlobalConfigForm from "./GlobalConfigForm";
 import ServerConfigForm from "./ServerConfigForm";
 import KeyringConfigForm from "./KeyringConfigForm";
-import { styled } from '@mui/system';
-import { useLocation } from 'react-router-dom';
+import {styled} from '@mui/system';
+import {useLocation} from 'react-router-dom';
+import CustomSnackbar from "../CustomSnackBar";
+
 const json2toml = require('json2toml');
 
 const StyledBox = styled(Box)({
@@ -20,24 +20,15 @@ const StyledBox = styled(Box)({
     border: 0,
 });
 
-const Alert = React.forwardRef<HTMLDivElement, AlertProps>(function Alert(
-    props,
-    ref,
-) {
-    return <MuiAlert elevation={6} ref={ref} variant="filled" {...props} />;
-});
-
 const MainForm: React.FC = () => {
     const location = useLocation();
     const jsonData = location.state?.jsonData as KujiraPriceFeederConfig;
 
-    const [snackbarOpen, setSnackbarOpen] = useState(false);
-    const [snackbarMessage, setSnackbarMessage] = useState('');
-    const [snackbarSeverity, setSnackbarSeverity] = useState<'success' | 'error'>('success');
-
-    const handleClose = (event?: React.SyntheticEvent | Event, reason?: string) => {
-        setSnackbarOpen(false);
-    };
+    const [snackbarDetails, setSnackbarDetails] = useState({
+        open: false,
+        message: '',
+        severity: 'success' as 'success' | 'error' | 'info' | 'warning',
+    });
 
     const [globalConfig, setGlobalConfig] = useState<GlobalConfig>({
         gas_adjustment: 2.5,
@@ -142,58 +133,57 @@ const MainForm: React.FC = () => {
 
         try {
             await navigator.clipboard.writeText(tomlData);
-            setSnackbarMessage('Configuration copied to clipboard!');
-            setSnackbarSeverity('success');
+            setSnackbarDetails({
+                open: true,
+                message: 'Configuration copied to clipboard!',
+                severity: 'success'
+            });
         } catch (err) {
             console.error('Failed to copy text: ', err);
-            setSnackbarMessage('Failed to copy configuration to clipboard.');
-            setSnackbarSeverity('error');
+            setSnackbarDetails({
+                open: true,
+                message: 'Failed to copy configuration.',
+                severity: 'error'
+            });
         }
-
-        setSnackbarOpen(true);
     };
 
     return (
         <form onSubmit={handleSubmit}>
-            <Snackbar
-                open={snackbarOpen}
-                autoHideDuration={6000}
-                onClose={handleClose}
-                anchorOrigin={{ vertical: 'top', horizontal: 'right' }}
-            >
-                <Alert onClose={handleClose} severity={snackbarSeverity} sx={{ width: '100%' }}>
-                    {snackbarMessage}
-                </Alert>
-            </Snackbar>
+            <CustomSnackbar
+                snackbarDetails={snackbarDetails}
+                setOpen={(open) => setSnackbarDetails(prev => ({ ...prev, open }))}
+                open={snackbarDetails.open}
+            />
             <Grid container spacing={2}>
                 <Grid item lg={4} xs={12} md={6}>
                     <StyledBox p={2} border={1} borderRadius={2}>
                         <Typography variant="h6">Global Configuration</Typography>
-                        <GlobalConfigForm config={globalConfig} onConfigChange={handleGlobalChange} />
+                        <GlobalConfigForm config={globalConfig} onConfigChange={handleGlobalChange}/>
                     </StyledBox>
                 </Grid>
                 <Grid item lg={4} md={6} xs={12}>
                     <StyledBox p={2} border={1} borderRadius={2}>
                         <Typography variant="h6">Server Configuration</Typography>
-                        <ServerConfigForm server={serverConfig} onServerChange={handleServerChange} />
+                        <ServerConfigForm server={serverConfig} onServerChange={handleServerChange}/>
                     </StyledBox>
                 </Grid>
                 <Grid item lg={4} md={6} xs={12}>
                     <StyledBox p={2} border={1} borderRadius={2}>
                         <Typography variant="h6">Account Configuration</Typography>
-                        <AccountConfigForm account={accountConfig} onAccountChange={handleAccountChange} />
+                        <AccountConfigForm account={accountConfig} onAccountChange={handleAccountChange}/>
                     </StyledBox>
                 </Grid>
                 <Grid item lg={4} md={6} xs={12}>
                     <StyledBox p={2} border={1} borderRadius={2}>
                         <Typography variant="h6">Keyring Configuration</Typography>
-                        <KeyringConfigForm keyring={keyringConfig} onKeyringChange={handleKeyringChange} />
+                        <KeyringConfigForm keyring={keyringConfig} onKeyringChange={handleKeyringChange}/>
                     </StyledBox>
                 </Grid>
                 <Grid item lg={4} md={6} xs={12}>
                     <StyledBox p={2} border={1} borderRadius={2}>
                         <Typography variant="h6">RPC Configuration</Typography>
-                        <RpcConfigForm rpc={rpcConfig} onRpcChange={handleRpcChange} />
+                        <RpcConfigForm rpc={rpcConfig} onRpcChange={handleRpcChange}/>
                     </StyledBox>
                 </Grid>
                 <Grid item xs={12} container justifyContent="flex-end">
