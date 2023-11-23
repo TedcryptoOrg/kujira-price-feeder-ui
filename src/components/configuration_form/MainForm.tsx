@@ -26,6 +26,7 @@ import DeviationThresholdsForm from "./DeviationThresholdsForm";
 import ProviderMinOverridesForm from "./ProviderMinOverridesForm";
 import CurrencyPairsForm from "./CurrencyParisForm";
 import ProviderEndpointForm from "./ProviderEndpointForm";
+import {Tab, Tabs} from "@mui/material";
 
 const json2toml = require('json2toml');
 
@@ -37,6 +38,11 @@ const StyledBox = styled(Box)({
 const MainForm: React.FC = () => {
     const location = useLocation();
     const jsonData = location.state?.jsonData as KujiraPriceFeederConfig;
+
+    const [tabValue, setTabValue] = useState(0);
+    const handleTabChange = (event: React.SyntheticEvent, newValue: number) => {
+        setTabValue(newValue);
+    };
 
     const [snackbarDetails, setSnackbarDetails] = useState({
         open: false,
@@ -228,73 +234,101 @@ const MainForm: React.FC = () => {
                 setOpen={(open) => setSnackbarDetails(prev => ({ ...prev, open }))}
                 open={snackbarDetails.open}
             />
-            <Grid container spacing={2}>
-                <Grid item lg={4} xs={12} md={6}>
-                    <StyledBox p={2} border={1} borderRadius={2}>
-                        <Typography variant="h6">Global Configuration</Typography>
-                        <GlobalConfigForm config={globalConfig} onConfigChange={handleGlobalChange}/>
-                    </StyledBox>
+            <Grid container>
+                <Grid item xs={9}>
+                    <Tabs value={tabValue} onChange={handleTabChange}>
+                        <Tab label="General" />
+                        <Tab label="Deviations & Overrides" />
+                        <Tab style={{ minWidth: 120 }} label={
+                            `Pairs (${currencyPairsData.length})`
+                        }/>
+                        <Tab label="Provider Endpoints" />
+                    </Tabs>
                 </Grid>
-                <Grid item lg={4} md={6} xs={12}>
-                    <StyledBox p={2} border={1} borderRadius={2}>
-                        <Typography variant="h6">Server Configuration</Typography>
-                        <ServerConfigForm server={serverConfig} onServerChange={handleServerChange}/>
-                    </StyledBox>
-                </Grid>
-                <Grid item lg={4} md={6} xs={12}>
-                    <StyledBox p={2} border={1} borderRadius={2}>
-                        <Typography variant="h6">Account Configuration</Typography>
-                        <AccountConfigForm account={accountConfig} onAccountChange={handleAccountChange}/>
-                    </StyledBox>
-                </Grid>
-                <Grid item lg={4} md={6} xs={12}>
-                    <StyledBox p={2} border={1} borderRadius={2}>
-                        <Typography variant="h6">Keyring Configuration</Typography>
-                        <KeyringConfigForm keyring={keyringConfig} onKeyringChange={handleKeyringChange}/>
-                    </StyledBox>
-                </Grid>
-                <Grid item lg={4} md={6} xs={12}>
-                    <StyledBox p={2} border={1} borderRadius={2}>
-                        <Typography variant="h6">RPC Configuration</Typography>
-                        <RpcConfigForm rpc={rpcConfig} onRpcChange={handleRpcChange}/>
-                    </StyledBox>
-                </Grid>
-                <Grid item lg={6} md={6} xs={12}>
-                    <StyledBox p={2} border={1} borderRadius={2}>
-                        <Typography variant="h6">Telemetry Configuration</Typography>
-                        <TelemetryConfigForm config={telemetryConfig} onConfigChange={handleTelemetryChange}/>
-                    </StyledBox>
-                </Grid>
-                <Grid item xs={12}>
-                    <StyledBox p={2} border={1} borderRadius={2}>
-                        <Typography variant="h6">Deviation Thresholds</Typography>
-                        <DeviationThresholdsForm config={deviationThresholdsData} onConfigChange={handleDeviationThresholdDataChange}/>
-                    </StyledBox>
-                </Grid>
-                <Grid item xs={12}>
-                    <StyledBox p={2} border={1} borderRadius={2}>
-                        <Typography variant="h6">Provider min overrides</Typography>
-                        <ProviderMinOverridesForm config={providerMinOverridesData} onConfigChange={handleProviderMinOverridesDataChange}/>
-                    </StyledBox>
-                </Grid>
-                <Grid item xs={12}>
-                    <StyledBox p={2} border={1} borderRadius={2}>
-                        <Typography variant="h6">Currency pairs</Typography>
-                        <CurrencyPairsForm config={currencyPairsData} onConfigChange={handleCurrencyPairsDataChange}/>
-                    </StyledBox>
-                </Grid>
-                <Grid item xs={12}>
-                    <StyledBox p={2} border={1} borderRadius={2}>
-                        <Typography variant="h6">Provider endpoints</Typography>
-                        <ProviderEndpointForm config={providerEndpointsData} onConfigChange={handleProviderEndpointsDataChange}/>
-                    </StyledBox>
-                </Grid>
-                <Grid item xs={12} container justifyContent="flex-end">
-                    <Button type="submit" variant="contained" color="primary">
-                        Submit
-                    </Button>
+                <Grid item xs={3}>
+                    <Box display="flex" justifyContent="flex-end">
+                        <Button type="submit" variant="contained" color="primary">
+                            Generate Configuration
+                        </Button>
+                    </Box>
                 </Grid>
             </Grid>
+            {tabValue === 0 && (
+                <Grid container spacing={2}>
+                    <Grid item lg={4} xs={12} md={6}>
+                        <StyledBox p={2} border={1} borderRadius={2}>
+                            <Typography variant="h6">Global Configuration</Typography>
+                            <GlobalConfigForm config={globalConfig} onConfigChange={handleGlobalChange}/>
+                        </StyledBox>
+                    </Grid>
+                    <Grid item lg={4} md={6} xs={12}>
+                        <StyledBox p={2} border={1} borderRadius={2}>
+                            <Typography variant="h6">Server Configuration</Typography>
+                            <ServerConfigForm server={serverConfig} onServerChange={handleServerChange}/>
+                        </StyledBox>
+                    </Grid>
+                    <Grid item lg={4} md={6} xs={12}>
+                        <StyledBox p={2} border={1} borderRadius={2}>
+                            <Typography variant="h6">Account Configuration</Typography>
+                            <AccountConfigForm account={accountConfig} onAccountChange={handleAccountChange}/>
+                        </StyledBox>
+                    </Grid>
+                    <Grid item lg={4} md={6} xs={12}>
+                        <StyledBox p={2} border={1} borderRadius={2}>
+                            <Typography variant="h6">Keyring Configuration</Typography>
+                            <KeyringConfigForm keyring={keyringConfig} onKeyringChange={handleKeyringChange}/>
+                        </StyledBox>
+                    </Grid>
+                    <Grid item lg={4} md={6} xs={12}>
+                        <StyledBox p={2} border={1} borderRadius={2}>
+                            <Typography variant="h6">RPC Configuration</Typography>
+                            <RpcConfigForm rpc={rpcConfig} onRpcChange={handleRpcChange}/>
+                        </StyledBox>
+                    </Grid>
+                </Grid>
+            )}
+            {tabValue === 1 && (
+                <Grid container spacing={2}>
+                    <Grid item xs={12}>
+                        <StyledBox p={2} border={1} borderRadius={2}>
+                            <Typography variant="h6">Telemetry Configuration</Typography>
+                            <TelemetryConfigForm config={telemetryConfig} onConfigChange={handleTelemetryChange}/>
+                        </StyledBox>
+                    </Grid>
+                    <Grid item xs={12}>
+                        <StyledBox p={2} border={1} borderRadius={2}>
+                            <Typography variant="h6">Deviation Thresholds</Typography>
+                            <DeviationThresholdsForm config={deviationThresholdsData} onConfigChange={handleDeviationThresholdDataChange}/>
+                        </StyledBox>
+                    </Grid>
+                </Grid>
+            )}
+            {tabValue === 2 && (
+                <Grid container spacing={2}>
+                    <Grid item xs={12}>
+                        <StyledBox p={2} border={1} borderRadius={2}>
+                            <Typography variant="h6">Currency pairs</Typography>
+                            <CurrencyPairsForm config={currencyPairsData} onConfigChange={handleCurrencyPairsDataChange}/>
+                        </StyledBox>
+                    </Grid>
+                </Grid>
+            )}
+            {tabValue === 3 && (
+                <Grid container spacing={2}>
+                    <Grid item xs={12}>
+                        <StyledBox p={2} border={1} borderRadius={2}>
+                            <Typography variant="h6">Provider min overrides</Typography>
+                            <ProviderMinOverridesForm config={providerMinOverridesData} onConfigChange={handleProviderMinOverridesDataChange}/>
+                        </StyledBox>
+                    </Grid>
+                    <Grid item xs={12}>
+                        <StyledBox p={2} border={1} borderRadius={2}>
+                            <Typography variant="h6">Provider endpoints</Typography>
+                            <ProviderEndpointForm config={providerEndpointsData} onConfigChange={handleProviderEndpointsDataChange}/>
+                        </StyledBox>
+                    </Grid>
+                </Grid>
+            )}
         </form>
     );
 };
