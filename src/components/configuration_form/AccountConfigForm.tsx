@@ -17,7 +17,7 @@ const AccountConfigForm: React.FC<AccountFormProps> = ({ account, onAccountChang
     };
 
     return (
-        <div>
+        <>
             <TextField
                 label="Fee Granter"
                 name="fee_granter"
@@ -62,7 +62,7 @@ const AccountConfigForm: React.FC<AccountFormProps> = ({ account, onAccountChang
                 margin="normal"
                 required
             />
-        </div>
+        </>
     );
 };
 

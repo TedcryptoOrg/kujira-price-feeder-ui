@@ -6,6 +6,7 @@ import MainForm from "./components/configuration_form/MainForm";
 import theme from "./theme";
 import Header from "./components/Header";
 import Footer from "./components/Footer";
+import { Analytics } from '@vercel/analytics/react';
 
 const App: React.FC = () => {
     return (
@@ -22,6 +23,7 @@ const App: React.FC = () => {
                 </Container>
                 <Footer />
             </Box>
+            <Analytics />
         </ThemeProvider>
     );
 };

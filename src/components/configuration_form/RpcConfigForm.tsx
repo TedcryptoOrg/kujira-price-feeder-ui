@@ -16,7 +16,7 @@ const RpcConfigForm: React.FC<RpcFormProps> = ({ rpc, onRpcChange }) => {
     };
 
     return (
-        <form noValidate autoComplete="off">
+        <>
             <TextField
                 label="gRPC Endpoint"
                 name="grpc_endpoint"
@@ -41,7 +41,7 @@ const RpcConfigForm: React.FC<RpcFormProps> = ({ rpc, onRpcChange }) => {
                 fullWidth
                 margin="normal"
             />
-        </form>
+        </>
     );
 };
 

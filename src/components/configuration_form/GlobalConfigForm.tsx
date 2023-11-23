@@ -19,7 +19,7 @@ const GlobalConfigForm: React.FC<GlobalConfigFormProps> = ({ config, onConfigCha
     };
 
     return (
-        <div>
+        <>
             <TextField
                 label="Gas Adjustment"
                 name="gas_adjustment"
@@ -73,7 +73,7 @@ const GlobalConfigForm: React.FC<GlobalConfigFormProps> = ({ config, onConfigCha
                 fullWidth
                 margin="normal"
             />
-        </div>
+        </>
     );
 };
 

@@ -16,7 +16,7 @@ const KeyringConfigForm: React.FC<KeyringFormProps> = ({ keyring, onKeyringChang
     };
 
     return (
-        <div>
+        <>
             <TextField
                 label="Backend"
                 name="backend"
@@ -33,7 +33,7 @@ const KeyringConfigForm: React.FC<KeyringFormProps> = ({ keyring, onKeyringChang
                 fullWidth
                 margin="normal"
             />
-        </div>
+        </>
     );
 };
 
