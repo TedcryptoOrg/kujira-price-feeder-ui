@@ -1,26 +1,29 @@
 import React from 'react';
-import logo from './logo.svg';
-import './App.css';
+import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
+import {Box, Container, ThemeProvider} from '@mui/material';
+import UploadToml from './components/UploadToml';
+import MainForm from "./components/configuration_form/MainForm";
+import theme from "./theme";
+import Header from "./components/Header";
+import Footer from "./components/Footer";
 
-function App() {
-  return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.tsx</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
-    </div>
-  );
-}
+const App: React.FC = () => {
+    return (
+        <ThemeProvider theme={theme}>
+            <Header />
+            <Box display="flex" flexDirection="column" minHeight="100vh">
+                <Container style={{ marginTop: '2rem', flexGrow: 1 }}>
+                    <Router>
+                        <Routes>
+                            <Route path="/" element={<UploadToml />} />
+                            <Route path="/form" element={<MainForm />} />
+                        </Routes>
+                    </Router>
+                </Container>
+                <Footer />
+            </Box>
+        </ThemeProvider>
+    );
+};
 
 export default App;
