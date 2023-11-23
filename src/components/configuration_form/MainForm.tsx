@@ -11,6 +11,7 @@ import ServerConfigForm from "./ServerConfigForm";
 import KeyringConfigForm from "./KeyringConfigForm";
 import { styled } from '@mui/system';
 import { useLocation } from 'react-router-dom';
+const json2toml = require('json2toml');
 
 const StyledBox = styled(Box)({
     background: 'linear-gradient(30deg, rgba(96,125,139,0.25), rgba(96,125,139,0.05))',
@@ -107,53 +108,64 @@ const MainForm: React.FC = () => {
         setRpcConfig(newRpcConfig);
     };
 
-    const handleSubmit = () => {
+    const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
+        event.preventDefault();
+
         // Combine data from all states and handle submission
-        const data = {
-            globalConfig,
+        const data: KujiraPriceFeederConfig = {
+            ...globalConfig,
             server: serverConfig,
             account: accountConfig,
             keyring: keyringConfig,
-            rpc: rpcConfig
+            rpc: rpcConfig,
         };
 
         console.log(data);
+        const tomlData = json2toml(data);
+        console.log(tomlData)
+
+        try {
+            await navigator.clipboard.writeText(tomlData);
+            console.log('Copied to clipboard');
+        } catch (err) {
+            console.error('Failed to copy text: ', err);
+        }
     };
 
     return (
         <form onSubmit={handleSubmit}>
             <Grid container spacing={2}>
-                <Grid item xs={12} md={6}>
+                <Grid item lg={4} xs={12} md={6}>
                     <StyledBox p={2} border={1} borderRadius={2}>
                         <Typography variant="h6">Global Configuration</Typography>
                         <GlobalConfigForm config={globalConfig} onConfigChange={handleGlobalChange} />
                     </StyledBox>
                 </Grid>
-                <Grid item xs={12} md={6}>
+                <Grid item lg={4} md={6} xs={12}>
                     <StyledBox p={2} border={1} borderRadius={2}>
                         <Typography variant="h6">Server Configuration</Typography>
                         <ServerConfigForm server={serverConfig} onServerChange={handleServerChange} />
                     </StyledBox>
                 </Grid>
-                <Grid item xs={12} md={6}>
+                <Grid item lg={4} md={6} xs={12}>
                     <StyledBox p={2} border={1} borderRadius={2}>
                         <Typography variant="h6">Account Configuration</Typography>
                         <AccountConfigForm account={accountConfig} onAccountChange={handleAccountChange} />
                     </StyledBox>
                 </Grid>
-                <Grid item xs={12} md={6}>
+                <Grid item lg={4} md={6} xs={12}>
                     <StyledBox p={2} border={1} borderRadius={2}>
                         <Typography variant="h6">Keyring Configuration</Typography>
                         <KeyringConfigForm keyring={keyringConfig} onKeyringChange={handleKeyringChange} />
                     </StyledBox>
                 </Grid>
-                <Grid item xs={12} md={6}>
+                <Grid item lg={4} md={6} xs={12}>
                     <StyledBox p={2} border={1} borderRadius={2}>
                         <Typography variant="h6">RPC Configuration</Typography>
                         <RpcConfigForm rpc={rpcConfig} onRpcChange={handleRpcChange} />
                     </StyledBox>
                 </Grid>
-                <Grid item xs={12}>
+                <Grid item xs={12} container justifyContent="flex-end">
                     <Button type="submit" variant="contained" color="primary">
                         Submit
                     </Button>

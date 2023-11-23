@@ -5,6 +5,7 @@ import UploadToml from './components/UploadToml';
 import MainForm from "./components/configuration_form/MainForm";
 import theme from "./theme";
 import Header from "./components/Header";
+import Footer from "./components/Footer";
 
 const App: React.FC = () => {
     return (
@@ -18,6 +19,7 @@ const App: React.FC = () => {
                     </Routes>
                 </Router>
             </Container>
+            <Footer />
         </ThemeProvider>
     );
 };

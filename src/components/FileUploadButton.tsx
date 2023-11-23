@@ -21,7 +21,12 @@ const FileUploadButton: React.FC<FileUploadButtonProps> = ({ onFileSelect }) => 
                 onChange={onFileSelect}
                 accept=".toml" // Change or remove this depending on your needs
             />
-            <Button variant="contained" color="primary" onClick={handleButtonClick}>
+            <Button
+                variant="contained"
+                color="primary"
+                onClick={handleButtonClick}
+                sx={{ fontSize: 'large', padding: '10px 20px' }} // Adjust the values as needed
+            >
                 Upload TOML File
             </Button>
         </div>

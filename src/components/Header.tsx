@@ -10,15 +10,15 @@ const Header = () => {
         <AppBar position="static" color="default" sx={{ backgroundColor: '#161721' }}>
             <Toolbar>
                 <a href={`/`}><img src={kujiraLogo} alt="Logo" width={`200px`}/></a>
-                &nbsp;<h3 style={{ color: 'white' }}>Price feeder by Tedcrypto.io</h3>
+                &nbsp;<h3 style={{ color: 'white' }}>Price feeder</h3>
                 <div style={{ flexGrow: 1 }}></div>
-                <IconButton color="inherit" href="https://github.com/Team-Kujira" target="_blank" rel="noopener noreferrer">
+                <IconButton color="inherit" href="https://github.com/TedcryptoOrg" target="_blank" rel="noopener noreferrer">
                     <GitHubIcon />
                 </IconButton>
                 <IconButton color="inherit" href="https://discord.gg/teamkujira" target="_blank" rel="noopener noreferrer">
                     <DiscordIcon />
                 </IconButton>
-                <IconButton color="inherit" href="https://twitter.com/TeamKujira" target="_blank" rel="noopener noreferrer">
+                <IconButton color="inherit" href="https://twitter.com/tedcrypto_" target="_blank" rel="noopener noreferrer">
                     <TwitterIcon />
                 </IconButton>
             </Toolbar>

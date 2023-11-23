@@ -2,6 +2,7 @@ import React, { useState, ChangeEvent } from 'react';
 import toml from "toml";
 import { useNavigate } from 'react-router-dom';
 import FileUploadButton from "./FileUploadButton";
+import { Box, Stack, Button } from '@mui/material';
 
 const UploadToml: React.FC = () => {
     const navigate = useNavigate();
@@ -27,10 +28,25 @@ const UploadToml: React.FC = () => {
         }
     };
 
+    const handleContinueButtonClick = () => {
+        navigate('/form');
+    }
+
     return (
-        <div>
-            <FileUploadButton onFileSelect={handleFileChange} />
-        </div>
+        <Box display="flex" justifyContent="center" alignItems="center" height="100vh">
+            <Stack spacing={2}>  {/* Adjust the spacing value as needed */}
+                <Button
+                    variant="contained"
+                    color="primary"
+                    onClick={handleContinueButtonClick}
+                    sx={{ fontSize: 'large', padding: '10px 20px' }} // Adjust the values as needed
+                >
+                    Create new
+                </Button>
+
+                <FileUploadButton onFileSelect={handleFileChange} />
+            </Stack>
+        </Box>
     );
 };
 
