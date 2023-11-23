@@ -11,7 +11,7 @@ import {
     Keyring,
     KujiraPriceFeederConfig,
     Telemetry,
-    DeviationThresholds
+    DeviationThresholds, ProviderMinOverrides
 } from "../../interfaces";
 import AccountConfigForm from "./AccountConfigForm";
 import RpcConfigForm from "./RpcConfigForm";
@@ -23,6 +23,7 @@ import {useLocation} from 'react-router-dom';
 import CustomSnackbar from "../CustomSnackBar";
 import TelemetryConfigForm from "./TelemetryConfigForm";
 import DeviationThresholdsForm from "./DeviationThresholdsForm";
+import ProviderMinOverridesForm from "./ProviderMinOverridesForm";
 
 const json2toml = require('json2toml');
 
@@ -56,7 +57,7 @@ const MainForm: React.FC = () => {
         write_timeout: '20s',
     });
     const [accountConfig, setAccountConfig] = useState<Account>({
-        address: '',
+        address: 'kujira',
         chain_id: 'kaiyo-1',
         validator: 'kujiravaloper',
         prefix: 'kujira',
@@ -79,7 +80,12 @@ const MainForm: React.FC = () => {
         service_name: 'price-feeder',
         type: 'prometheus',
     });
-    const [deviationThresholdsData, setDeviationThresholdsData] = useState([{ base: 'KUJI', threshold: '1' } as DeviationThresholds]);
+    const [deviationThresholdsData, setDeviationThresholdsData] = useState([
+        { base: 'KUJI', threshold: '1' } as DeviationThresholds
+    ]);
+    const [providerMinOverridesData, setProviderMinOverridesData] = useState([
+        { denoms: ['KUJI'], providers: 1 } as ProviderMinOverrides
+    ]);
 
     useEffect(() => {
         if (jsonData) {
@@ -123,6 +129,7 @@ const MainForm: React.FC = () => {
                 type: jsonData.telemetry.type || '',
             });
             setDeviationThresholdsData(jsonData.deviation_thresholds || []);
+            setProviderMinOverridesData(jsonData.provider_min_overrides || []);
         }
     }, [jsonData]);
 
@@ -154,6 +161,10 @@ const MainForm: React.FC = () => {
         setDeviationThresholdsData(newDeviationThresholdsData);
     }
 
+    const handleProviderMinOverridesDataChange = (newProviderMinOverridesData: ProviderMinOverrides[]) => {
+        setProviderMinOverridesData(newProviderMinOverridesData);
+    }
+
     const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
         event.preventDefault();
 
@@ -168,7 +179,7 @@ const MainForm: React.FC = () => {
             provider_endpoints: [],
             deviation_thresholds: deviationThresholdsData,
             currency_pairs: [],
-            provider_min_overrides: [],
+            provider_min_overrides: providerMinOverridesData,
         };
 
         console.log(data);
@@ -240,6 +251,12 @@ const MainForm: React.FC = () => {
                     <StyledBox p={2} border={1} borderRadius={2}>
                         <Typography variant="h6">Deviation Thresholds</Typography>
                         <DeviationThresholdsForm config={deviationThresholdsData} onConfigChange={handleDeviationThresholdDataChange}/>
+                    </StyledBox>
+                </Grid>
+                <Grid item xs={12}>
+                    <StyledBox p={2} border={1} borderRadius={2}>
+                        <Typography variant="h6">Provider min overrides</Typography>
+                        <ProviderMinOverridesForm config={providerMinOverridesData} onConfigChange={handleProviderMinOverridesDataChange}/>
                     </StyledBox>
                 </Grid>
                 <Grid item xs={12} container justifyContent="flex-end">
