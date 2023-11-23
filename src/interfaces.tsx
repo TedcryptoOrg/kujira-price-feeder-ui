@@ -46,7 +46,7 @@ export interface Telemetry {
 export interface ProviderEndpoints {
     name: string;
     urls: string[];
-    provider_timeout: string;
+    provider_timeout?: string;
 }
 
 export interface DeviationThresholds {

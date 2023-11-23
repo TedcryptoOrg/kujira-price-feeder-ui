@@ -11,7 +11,7 @@ import {
     Keyring,
     KujiraPriceFeederConfig,
     Telemetry,
-    DeviationThresholds, ProviderMinOverrides, CurrencyPairs
+    DeviationThresholds, ProviderMinOverrides, CurrencyPairs, ProviderEndpoints
 } from "../../interfaces";
 import AccountConfigForm from "./AccountConfigForm";
 import RpcConfigForm from "./RpcConfigForm";
@@ -25,6 +25,7 @@ import TelemetryConfigForm from "./TelemetryConfigForm";
 import DeviationThresholdsForm from "./DeviationThresholdsForm";
 import ProviderMinOverridesForm from "./ProviderMinOverridesForm";
 import CurrencyPairsForm from "./CurrencyParisForm";
+import ProviderEndpointForm from "./ProviderEndpointForm";
 
 const json2toml = require('json2toml');
 
@@ -90,6 +91,9 @@ const MainForm: React.FC = () => {
     const [currencyPairsData, setCurrencyPairsData] = useState([
         { base: 'AMPKUJI', quote: 'USD', providers: ['finv2'] } as CurrencyPairs
     ]);
+    const [providerEndpointsData, setProviderEndpointsData] = useState([
+        { name: 'finv2', urls: ['https://finv2.dev.kujira.network'] } as ProviderEndpoints
+    ]);
 
     useEffect(() => {
         if (jsonData) {
@@ -135,6 +139,7 @@ const MainForm: React.FC = () => {
             setDeviationThresholdsData(jsonData.deviation_thresholds || []);
             setProviderMinOverridesData(jsonData.provider_min_overrides || []);
             setCurrencyPairsData(jsonData.currency_pairs || []);
+            setProviderEndpointsData(jsonData.provider_endpoints || []);
         }
     }, [jsonData]);
 
@@ -174,6 +179,10 @@ const MainForm: React.FC = () => {
         setCurrencyPairsData(newCurrencyPairsData);
     }
 
+    const handleProviderEndpointsDataChange = (newProviderEndpointsData: ProviderEndpoints[]) => {
+        setProviderEndpointsData(newProviderEndpointsData);
+    }
+
     const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
         event.preventDefault();
 
@@ -185,7 +194,7 @@ const MainForm: React.FC = () => {
             keyring: keyringConfig,
             rpc: rpcConfig,
             telemetry: telemetryConfig,
-            provider_endpoints: [],
+            provider_endpoints: providerEndpointsData,
             deviation_thresholds: deviationThresholdsData,
             currency_pairs: currencyPairsData,
             provider_min_overrides: providerMinOverridesData,
@@ -272,6 +281,12 @@ const MainForm: React.FC = () => {
                     <StyledBox p={2} border={1} borderRadius={2}>
                         <Typography variant="h6">Currency pairs</Typography>
                         <CurrencyPairsForm config={currencyPairsData} onConfigChange={handleCurrencyPairsDataChange}/>
+                    </StyledBox>
+                </Grid>
+                <Grid item xs={12}>
+                    <StyledBox p={2} border={1} borderRadius={2}>
+                        <Typography variant="h6">Provider endpoints</Typography>
+                        <ProviderEndpointForm config={providerEndpointsData} onConfigChange={handleProviderEndpointsDataChange}/>
                     </StyledBox>
                 </Grid>
                 <Grid item xs={12} container justifyContent="flex-end">

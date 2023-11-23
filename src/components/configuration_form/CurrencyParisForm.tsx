@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import TextField from '@mui/material/TextField';
 import { CurrencyPairs } from "../../interfaces";
 import Autocomplete from '@mui/material/Autocomplete';
@@ -17,6 +17,10 @@ interface CurrencyPairsFormProps {
 
 const CurrencyPairsForm: React.FC<CurrencyPairsFormProps> = ({ config, onConfigChange }) => {
     const [showAdvanced, setShowAdvanced] = useState<boolean[]>(config.map(pair => pair.derivative !== undefined && pair.derivative !== ''));
+
+    useEffect(() => {
+        setShowAdvanced(config.map(pair => pair.derivative !== undefined && pair.derivative !== ''));
+    }, [config]);
 
     type PartialCurrencyPairs = {
         [K in keyof CurrencyPairs]?: CurrencyPairs[K];
@@ -80,7 +84,7 @@ const CurrencyPairsForm: React.FC<CurrencyPairsFormProps> = ({ config, onConfigC
                                 fullWidth
                             />
                         </Grid>
-                        <Grid item xs={3}>
+                        <Grid item xs={4}>
                             <Autocomplete
                                 multiple
                                 options={[]}
@@ -92,10 +96,7 @@ const CurrencyPairsForm: React.FC<CurrencyPairsFormProps> = ({ config, onConfigC
                                 )}
                             />
                         </Grid>
-                        <Grid item xs={1}>
-                            <Button onClick={() => handleRemovePair(index)}>Remove</Button>
-                        </Grid>
-                        <Grid item xs={12}>
+                        <Grid item xs={4}>
                             <FormControlLabel
                                 control={<Switch checked={showAdvanced[index]} onChange={() => {
                                     const newShowAdvanced = [...showAdvanced];
@@ -104,6 +105,9 @@ const CurrencyPairsForm: React.FC<CurrencyPairsFormProps> = ({ config, onConfigC
                                 }} />}
                                 label="Advanced"
                             />
+                            <Button onClick={() => handleRemovePair(index)}>Remove</Button>
+                        </Grid>
+                        <Grid item xs={12}>
                             <Collapse in={showAdvanced[index]}>
                                 <Box border={1} p={2} m={2} borderRadius={2}>
                                     <Typography variant="h6">Advanced settings</Typography>
