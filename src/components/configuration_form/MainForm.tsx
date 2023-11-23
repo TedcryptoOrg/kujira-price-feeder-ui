@@ -3,7 +3,16 @@ import Box from '@mui/material/Box';
 import Grid from '@mui/material/Grid';
 import Button from '@mui/material/Button';
 import Typography from '@mui/material/Typography';
-import {ServerConfig, Account, GlobalConfig, Rpc, Keyring, KujiraPriceFeederConfig, Telemetry} from "../../interfaces";
+import {
+    ServerConfig,
+    Account,
+    GlobalConfig,
+    Rpc,
+    Keyring,
+    KujiraPriceFeederConfig,
+    Telemetry,
+    DeviationThresholds
+} from "../../interfaces";
 import AccountConfigForm from "./AccountConfigForm";
 import RpcConfigForm from "./RpcConfigForm";
 import GlobalConfigForm from "./GlobalConfigForm";
@@ -13,6 +22,7 @@ import {styled} from '@mui/system';
 import {useLocation} from 'react-router-dom';
 import CustomSnackbar from "../CustomSnackBar";
 import TelemetryConfigForm from "./TelemetryConfigForm";
+import DeviationThresholdsForm from "./DeviationThresholdsForm";
 
 const json2toml = require('json2toml');
 
@@ -69,6 +79,7 @@ const MainForm: React.FC = () => {
         service_name: 'price-feeder',
         type: 'prometheus',
     });
+    const [deviationThresholdsData, setDeviationThresholdsData] = useState([{ base: 'KUJI', threshold: '1' } as DeviationThresholds]);
 
     useEffect(() => {
         if (jsonData) {
@@ -102,6 +113,16 @@ const MainForm: React.FC = () => {
                 rpc_timeout: jsonData.rpc.rpc_timeout || '',
                 tmrpc_endpoint: jsonData.rpc.tmrpc_endpoint || '',
             });
+            setTelemetryConfig({
+                enable_hostname: jsonData.telemetry.enable_hostname || false,
+                enable_hostname_label: jsonData.telemetry.enable_hostname_label || false,
+                enable_service_label: jsonData.telemetry.enable_service_label || false,
+                enabled: jsonData.telemetry.enabled || false,
+                global_labels: jsonData.telemetry.global_labels || [],
+                service_name: jsonData.telemetry.service_name || '',
+                type: jsonData.telemetry.type || '',
+            });
+            setDeviationThresholdsData(jsonData.deviation_thresholds || []);
         }
     }, [jsonData]);
 
@@ -129,6 +150,10 @@ const MainForm: React.FC = () => {
         setTelemetryConfig(newTelemetryConfig);
     }
 
+    const handleDeviationThresholdDataChange = (newDeviationThresholdsData: DeviationThresholds[]) => {
+        setDeviationThresholdsData(newDeviationThresholdsData);
+    }
+
     const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
         event.preventDefault();
 
@@ -141,7 +166,7 @@ const MainForm: React.FC = () => {
             rpc: rpcConfig,
             telemetry: telemetryConfig,
             provider_endpoints: [],
-            deviation_thresholds: [],
+            deviation_thresholds: deviationThresholdsData,
             currency_pairs: [],
             provider_min_overrides: [],
         };
@@ -209,6 +234,12 @@ const MainForm: React.FC = () => {
                     <StyledBox p={2} border={1} borderRadius={2}>
                         <Typography variant="h6">Telemetry Configuration</Typography>
                         <TelemetryConfigForm config={telemetryConfig} onConfigChange={handleTelemetryChange}/>
+                    </StyledBox>
+                </Grid>
+                <Grid item xs={12}>
+                    <StyledBox p={2} border={1} borderRadius={2}>
+                        <Typography variant="h6">Deviation Thresholds</Typography>
+                        <DeviationThresholdsForm config={deviationThresholdsData} onConfigChange={handleDeviationThresholdDataChange}/>
                     </StyledBox>
                 </Grid>
                 <Grid item xs={12} container justifyContent="flex-end">
