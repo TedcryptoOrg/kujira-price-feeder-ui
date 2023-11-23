@@ -3,6 +3,8 @@ import Box from '@mui/material/Box';
 import Grid from '@mui/material/Grid';
 import Button from '@mui/material/Button';
 import Typography from '@mui/material/Typography';
+import Snackbar from '@mui/material/Snackbar';
+import MuiAlert, { AlertProps } from '@mui/material/Alert';
 import {ServerConfig, Account, GlobalConfig, Rpc, Keyring, KujiraPriceFeederConfig} from "../../interfaces";
 import AccountConfigForm from "./AccountConfigForm";
 import RpcConfigForm from "./RpcConfigForm";
@@ -18,10 +20,24 @@ const StyledBox = styled(Box)({
     border: 0,
 });
 
+const Alert = React.forwardRef<HTMLDivElement, AlertProps>(function Alert(
+    props,
+    ref,
+) {
+    return <MuiAlert elevation={6} ref={ref} variant="filled" {...props} />;
+});
 
 const MainForm: React.FC = () => {
     const location = useLocation();
     const jsonData = location.state?.jsonData as KujiraPriceFeederConfig;
+
+    const [snackbarOpen, setSnackbarOpen] = useState(false);
+    const [snackbarMessage, setSnackbarMessage] = useState('');
+    const [snackbarSeverity, setSnackbarSeverity] = useState<'success' | 'error'>('success');
+
+    const handleClose = (event?: React.SyntheticEvent | Event, reason?: string) => {
+        setSnackbarOpen(false);
+    };
 
     const [globalConfig, setGlobalConfig] = useState<GlobalConfig>({
         gas_adjustment: 2.5,
@@ -126,14 +142,29 @@ const MainForm: React.FC = () => {
 
         try {
             await navigator.clipboard.writeText(tomlData);
-            console.log('Copied to clipboard');
+            setSnackbarMessage('Configuration copied to clipboard!');
+            setSnackbarSeverity('success');
         } catch (err) {
             console.error('Failed to copy text: ', err);
+            setSnackbarMessage('Failed to copy configuration to clipboard.');
+            setSnackbarSeverity('error');
         }
+
+        setSnackbarOpen(true);
     };
 
     return (
         <form onSubmit={handleSubmit}>
+            <Snackbar
+                open={snackbarOpen}
+                autoHideDuration={6000}
+                onClose={handleClose}
+                anchorOrigin={{ vertical: 'top', horizontal: 'right' }}
+            >
+                <Alert onClose={handleClose} severity={snackbarSeverity} sx={{ width: '100%' }}>
+                    {snackbarMessage}
+                </Alert>
+            </Snackbar>
             <Grid container spacing={2}>
                 <Grid item lg={4} xs={12} md={6}>
                     <StyledBox p={2} border={1} borderRadius={2}>
