@@ -11,7 +11,7 @@ import {
     Keyring,
     KujiraPriceFeederConfig,
     Telemetry,
-    DeviationThresholds, ProviderMinOverrides
+    DeviationThresholds, ProviderMinOverrides, CurrencyPairs
 } from "../../interfaces";
 import AccountConfigForm from "./AccountConfigForm";
 import RpcConfigForm from "./RpcConfigForm";
@@ -24,6 +24,7 @@ import CustomSnackbar from "../CustomSnackBar";
 import TelemetryConfigForm from "./TelemetryConfigForm";
 import DeviationThresholdsForm from "./DeviationThresholdsForm";
 import ProviderMinOverridesForm from "./ProviderMinOverridesForm";
+import CurrencyPairsForm from "./CurrencyParisForm";
 
 const json2toml = require('json2toml');
 
@@ -86,6 +87,9 @@ const MainForm: React.FC = () => {
     const [providerMinOverridesData, setProviderMinOverridesData] = useState([
         { denoms: ['KUJI'], providers: 1 } as ProviderMinOverrides
     ]);
+    const [currencyPairsData, setCurrencyPairsData] = useState([
+        { base: 'AMPKUJI', quote: 'USD', providers: ['finv2'] } as CurrencyPairs
+    ]);
 
     useEffect(() => {
         if (jsonData) {
@@ -130,6 +134,7 @@ const MainForm: React.FC = () => {
             });
             setDeviationThresholdsData(jsonData.deviation_thresholds || []);
             setProviderMinOverridesData(jsonData.provider_min_overrides || []);
+            setCurrencyPairsData(jsonData.currency_pairs || []);
         }
     }, [jsonData]);
 
@@ -165,6 +170,10 @@ const MainForm: React.FC = () => {
         setProviderMinOverridesData(newProviderMinOverridesData);
     }
 
+    const handleCurrencyPairsDataChange = (newCurrencyPairsData: CurrencyPairs[]) => {
+        setCurrencyPairsData(newCurrencyPairsData);
+    }
+
     const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
         event.preventDefault();
 
@@ -178,7 +187,7 @@ const MainForm: React.FC = () => {
             telemetry: telemetryConfig,
             provider_endpoints: [],
             deviation_thresholds: deviationThresholdsData,
-            currency_pairs: [],
+            currency_pairs: currencyPairsData,
             provider_min_overrides: providerMinOverridesData,
         };
 
@@ -257,6 +266,12 @@ const MainForm: React.FC = () => {
                     <StyledBox p={2} border={1} borderRadius={2}>
                         <Typography variant="h6">Provider min overrides</Typography>
                         <ProviderMinOverridesForm config={providerMinOverridesData} onConfigChange={handleProviderMinOverridesDataChange}/>
+                    </StyledBox>
+                </Grid>
+                <Grid item xs={12}>
+                    <StyledBox p={2} border={1} borderRadius={2}>
+                        <Typography variant="h6">Currency pairs</Typography>
+                        <CurrencyPairsForm config={currencyPairsData} onConfigChange={handleCurrencyPairsDataChange}/>
                     </StyledBox>
                 </Grid>
                 <Grid item xs={12} container justifyContent="flex-end">
