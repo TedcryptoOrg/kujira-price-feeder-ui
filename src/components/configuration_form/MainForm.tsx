@@ -3,7 +3,7 @@ import Box from '@mui/material/Box';
 import Grid from '@mui/material/Grid';
 import Button from '@mui/material/Button';
 import Typography from '@mui/material/Typography';
-import {ServerConfig, Account, GlobalConfig, Rpc, Keyring, KujiraPriceFeederConfig} from "../../interfaces";
+import {ServerConfig, Account, GlobalConfig, Rpc, Keyring, KujiraPriceFeederConfig, Telemetry} from "../../interfaces";
 import AccountConfigForm from "./AccountConfigForm";
 import RpcConfigForm from "./RpcConfigForm";
 import GlobalConfigForm from "./GlobalConfigForm";
@@ -12,6 +12,7 @@ import KeyringConfigForm from "./KeyringConfigForm";
 import {styled} from '@mui/system';
 import {useLocation} from 'react-router-dom';
 import CustomSnackbar from "../CustomSnackBar";
+import TelemetryConfigForm from "./TelemetryConfigForm";
 
 const json2toml = require('json2toml');
 
@@ -58,6 +59,15 @@ const MainForm: React.FC = () => {
         grpc_endpoint: 'http://localhost:9090',
         rpc_timeout: '500ms',
         tmrpc_endpoint: 'http://localhost:26657',
+    });
+    const [telemetryConfig, setTelemetryConfig] = useState<Telemetry>({
+        enable_hostname: true,
+        enable_hostname_label: true,
+        enable_service_label: true,
+        enabled: true,
+        global_labels: [["chain-id", "kayo-1"]],
+        service_name: 'price-feeder',
+        type: 'prometheus',
     });
 
     useEffect(() => {
@@ -115,6 +125,10 @@ const MainForm: React.FC = () => {
         setRpcConfig(newRpcConfig);
     };
 
+    const handleTelemetryChange = (newTelemetryConfig: Telemetry) => {
+        setTelemetryConfig(newTelemetryConfig);
+    }
+
     const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
         event.preventDefault();
 
@@ -125,6 +139,11 @@ const MainForm: React.FC = () => {
             account: accountConfig,
             keyring: keyringConfig,
             rpc: rpcConfig,
+            telemetry: telemetryConfig,
+            provider_endpoints: [],
+            deviation_thresholds: [],
+            currency_pairs: [],
+            provider_min_overrides: [],
         };
 
         console.log(data);
@@ -184,6 +203,12 @@ const MainForm: React.FC = () => {
                     <StyledBox p={2} border={1} borderRadius={2}>
                         <Typography variant="h6">RPC Configuration</Typography>
                         <RpcConfigForm rpc={rpcConfig} onRpcChange={handleRpcChange}/>
+                    </StyledBox>
+                </Grid>
+                <Grid item lg={6} md={6} xs={12}>
+                    <StyledBox p={2} border={1} borderRadius={2}>
+                        <Typography variant="h6">Telemetry Configuration</Typography>
+                        <TelemetryConfigForm config={telemetryConfig} onConfigChange={handleTelemetryChange}/>
                     </StyledBox>
                 </Grid>
                 <Grid item xs={12} container justifyContent="flex-end">

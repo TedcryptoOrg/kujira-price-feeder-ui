@@ -33,9 +33,48 @@ export interface GlobalConfig {
     history_db: string;
 }
 
+export interface Telemetry {
+    enable_hostname: boolean;
+    enable_hostname_label: boolean;
+    enable_service_label: boolean;
+    enabled: boolean;
+    global_labels: Array<[string, string]>;
+    service_name: string;
+    type: string;
+}
+
+export interface ProviderEndpoints {
+    name: string;
+    urls: string[];
+    provider_timeout: string;
+}
+
+export interface DeviationThresholds {
+    base: string;
+    threshold: string;
+}
+
+export interface ProviderMinOverrides {
+    denoms: string[];
+    providers: number;
+}
+
+export interface CurrencyPairs {
+    base: string;
+    quote: string;
+    providers: string[];
+    derivative?: string;
+    derivative_period?: string;
+}
+
 export interface KujiraPriceFeederConfig extends GlobalConfig {
     server: ServerConfig;
     account: Account;
     keyring: Keyring;
     rpc: Rpc;
+    telemetry: Telemetry;
+    provider_endpoints: ProviderEndpoints[];
+    deviation_thresholds: DeviationThresholds[];
+    provider_min_overrides: ProviderMinOverrides[];
+    currency_pairs: CurrencyPairs[];
 }
