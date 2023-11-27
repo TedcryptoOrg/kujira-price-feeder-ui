@@ -27,6 +27,9 @@ import ProviderMinOverridesForm from "./ProviderMinOverridesForm";
 import CurrencyPairsForm from "./CurrencyParisForm";
 import ProviderEndpointForm from "./ProviderEndpointForm";
 import {Tab, Tabs} from "@mui/material";
+import useMediaQuery from '@mui/material/useMediaQuery';
+import { useTheme } from '@mui/material/styles';
+import Hidden from '@mui/material/Hidden';
 
 const json2toml = require('json2toml');
 
@@ -36,6 +39,9 @@ const StyledBox = styled(Box)({
 });
 
 const MainForm: React.FC = () => {
+    const theme = useTheme();
+    const matches = useMediaQuery(theme.breakpoints.up('sm'));
+
     const location = useLocation();
     const jsonData = location.state?.jsonData as KujiraPriceFeederConfig;
 
@@ -235,8 +241,15 @@ const MainForm: React.FC = () => {
                 open={snackbarDetails.open}
             />
             <Grid container>
-                <Grid item xs={9}>
-                    <Tabs value={tabValue} onChange={handleTabChange}>
+                <Grid item xs={12} md={9}>
+                    <Tabs
+                        value={tabValue}
+                        onChange={handleTabChange}
+                        variant="scrollable"
+                        allowScrollButtonsMobile
+                        orientation={matches ? "horizontal" : "vertical"}
+                        scrollButtons
+                    >
                         <Tab label="General" />
                         <Tab label="Deviations & Overrides" />
                         <Tab style={{ minWidth: 120 }} label={
@@ -245,13 +258,15 @@ const MainForm: React.FC = () => {
                         <Tab label="Provider Endpoints" />
                     </Tabs>
                 </Grid>
-                <Grid item xs={3}>
-                    <Box display="flex" justifyContent="flex-end">
-                        <Button type="submit" variant="contained" color="primary">
-                            Generate Configuration
-                        </Button>
-                    </Box>
-                </Grid>
+                <Hidden mdDown>
+                    <Grid item md={3}>
+                        <Box display="flex" justifyContent="flex-end">
+                            <Button type="submit" variant="contained" color="primary">
+                                Generate Configuration
+                            </Button>
+                        </Box>
+                    </Grid>
+                </Hidden>
             </Grid>
             {tabValue === 0 && (
                 <Grid container spacing={2}>
@@ -329,6 +344,15 @@ const MainForm: React.FC = () => {
                     </Grid>
                 </Grid>
             )}
+            <Hidden mdUp>
+                    <Grid item padding={4}>
+                        <Box display="flex" justifyContent="flex-end">
+                            <Button type="submit" variant="contained" color="primary" fullWidth>
+                                Generate Configuration
+                            </Button>
+                        </Box>
+                    </Grid>
+            </Hidden>
         </form>
     );
 };
