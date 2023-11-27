@@ -252,9 +252,7 @@ const MainForm: React.FC = () => {
                     >
                         <Tab label="General" />
                         <Tab label="Deviations & Overrides" />
-                        <Tab style={{ minWidth: 120 }} label={
-                            `Pairs (${currencyPairsData.length})`
-                        }/>
+                        <Tab label={`Pairs (${currencyPairsData.length})`}/>
                         <Tab label="Provider Endpoints" />
                     </Tabs>
                 </Grid>

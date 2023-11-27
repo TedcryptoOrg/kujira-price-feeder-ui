@@ -13,7 +13,7 @@ const Footer: React.FC = () => {
                         <img src={TedcryptoLogo} alt="Logo" style={{ height: 50 }} />
                     </Grid>
                     <Grid item>
-                        <IconButton color="inherit" href="https://telegram.me/yourchannel" target="_blank">
+                        <IconButton color="inherit" href="https://t.me/TedcryptoOfficial" target="_blank">
                             <TelegramIcon />
                         </IconButton>
                     </Grid>
