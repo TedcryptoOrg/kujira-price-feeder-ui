@@ -1,6 +1,6 @@
 {
-  "short_name": "React App",
-  "name": "Create React App Sample",
+  "short_name": "Kujira price feeder",
+  "name": "Kujira price feeder by Tedcrypto.io",
   "icons": [
     {
       "src": "favicon.ico",
