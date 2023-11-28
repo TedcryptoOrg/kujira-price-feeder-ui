@@ -11,7 +11,7 @@ import {
     Keyring,
     KujiraPriceFeederConfig,
     Telemetry,
-    DeviationThresholds, ProviderMinOverrides, CurrencyPairs, ProviderEndpoints
+    DeviationThresholds, ProviderMinOverrides, CurrencyPairs, ProviderEndpoints, ProviderContract
 } from "../../interfaces";
 import AccountConfigForm from "./AccountConfigForm";
 import RpcConfigForm from "./RpcConfigForm";
@@ -30,6 +30,7 @@ import {Tab, Tabs} from "@mui/material";
 import useMediaQuery from '@mui/material/useMediaQuery';
 import { useTheme } from '@mui/material/styles';
 import Hidden from '@mui/material/Hidden';
+import ProviderContractForm from "./ProviderContractForm";
 
 const json2toml = require('json2toml');
 
@@ -106,6 +107,9 @@ const MainForm: React.FC = () => {
     const [providerEndpointsData, setProviderEndpointsData] = useState([
         { name: 'finv2', urls: ['https://finv2.dev.kujira.network'] } as ProviderEndpoints
     ]);
+    const [providerContractData, setProviderContractData] = useState([
+        {name: '', addresses: [{denom: '', address: ''}]} as ProviderContract,
+    ]);
 
     useEffect(() => {
         if (jsonData) {
@@ -152,6 +156,7 @@ const MainForm: React.FC = () => {
             setProviderMinOverridesData(jsonData.provider_min_overrides || []);
             setCurrencyPairsData(jsonData.currency_pairs || []);
             setProviderEndpointsData(jsonData.provider_endpoints || []);
+            setProviderContractData(jsonData.provider_contracts || []);
         }
     }, [jsonData]);
 
@@ -195,6 +200,10 @@ const MainForm: React.FC = () => {
         setProviderEndpointsData(newProviderEndpointsData);
     }
 
+    const handleProviderContractDataChange = (newProviderContractData: ProviderContract[]) => {
+        setProviderContractData(newProviderContractData);
+    }
+
     function createData(): KujiraPriceFeederConfig
     {
         return {
@@ -208,6 +217,7 @@ const MainForm: React.FC = () => {
             deviation_thresholds: deviationThresholdsData,
             currency_pairs: currencyPairsData,
             provider_min_overrides: providerMinOverridesData,
+            provider_contracts: providerContractData,
         };
     }
 
@@ -225,18 +235,26 @@ const MainForm: React.FC = () => {
     const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
         event.preventDefault();
 
+        const contractAddresses: {[key: string]: {[key: string]: string}} = {};
+        providerContractData.forEach(contract => {
+            contractAddresses[contract.name] = contract.addresses.reduce((acc, curr) => {
+                acc[curr.denom] = curr.address;
+                return acc;
+            }, {} as {[key: string]: string});
+        });
+
         // Combine data from all states and handle submission
-        const data: KujiraPriceFeederConfig = createData();
-        let tomlData = json2toml(globalConfig);
-        tomlData += json2toml({server: serverConfig});
-        tomlData += json2toml({account: accountConfig});
-        tomlData += json2toml({keyring: keyringConfig});
-        tomlData += json2toml({rpc: rpcConfig});
-        tomlData += json2toml({telemetry: telemetryConfig});
-        tomlData += json2toml({provider_endpoints: providerEndpointsData});
-        tomlData += json2toml({deviation_thresholds: deviationThresholdsData});
-        tomlData += json2toml({currency_pairs: currencyPairsData});
-        tomlData += json2toml({provider_min_overrides: providerMinOverridesData});
+        let tomlData = json2toml(globalConfig, {newlineAfterSection: true})+"\n";
+        tomlData += json2toml({server: serverConfig}, {newlineAfterSection: true})+"\n";
+        tomlData += json2toml({account: accountConfig}, {newlineAfterSection: true})+"\n";
+        tomlData += json2toml({keyring: keyringConfig}, {newlineAfterSection: true})+"\n";
+        tomlData += json2toml({rpc: rpcConfig}, {newlineAfterSection: true})+"\n";
+        tomlData += json2toml({telemetry: telemetryConfig}, {newlineAfterSection: true})+"\n";
+        tomlData += json2toml({provider_endpoints: providerEndpointsData}, {newlineAfterSection: true})+"\n";
+        tomlData += json2toml({deviation_thresholds: deviationThresholdsData}, {newlineAfterSection: true})+"\n";
+        tomlData += json2toml({currency_pairs: currencyPairsData}, {newlineAfterSection: true})+"\n";
+        tomlData += json2toml({provider_min_overrides: providerMinOverridesData}, {newlineAfterSection: true})+"\n";
+        tomlData += json2toml({contract_addresses: contractAddresses}, {newlineAfterSection: true});
 
         try {
             await navigator.clipboard.writeText(tomlData);
@@ -276,6 +294,7 @@ const MainForm: React.FC = () => {
                         <Tab label="Deviations & Overrides" />
                         <Tab label={`Pairs (${currencyPairsData.length})`}/>
                         <Tab label="Provider Endpoints" />
+                        <Tab label="Provider Contracts" />
                     </Tabs>
                 </Grid>
                 <Hidden mdDown>
@@ -363,6 +382,16 @@ const MainForm: React.FC = () => {
                         <StyledBox p={2} border={1} borderRadius={2}>
                             <Typography variant="h6">Provider endpoints</Typography>
                             <ProviderEndpointForm config={providerEndpointsData} onConfigChange={handleProviderEndpointsDataChange}/>
+                        </StyledBox>
+                    </Grid>
+                </Grid>
+            )}
+            {tabValue === 4 && (
+                <Grid container spacing={2}>
+                    <Grid item xs={12}>
+                        <StyledBox p={2} border={1} borderRadius={2}>
+                            <Typography variant="h6">Provider Contracts</Typography>
+                            <ProviderContractForm config={providerContractData} onConfigChange={handleProviderContractDataChange}/>
                         </StyledBox>
                     </Grid>
                 </Grid>
