@@ -195,11 +195,9 @@ const MainForm: React.FC = () => {
         setProviderEndpointsData(newProviderEndpointsData);
     }
 
-    const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
-        event.preventDefault();
-
-        // Combine data from all states and handle submission
-        const data: KujiraPriceFeederConfig = {
+    function createData(): KujiraPriceFeederConfig
+    {
+        return {
             ...globalConfig,
             server: serverConfig,
             account: accountConfig,
@@ -211,10 +209,25 @@ const MainForm: React.FC = () => {
             currency_pairs: currencyPairsData,
             provider_min_overrides: providerMinOverridesData,
         };
+    }
 
-        console.log(data);
+    const saveConfig = () => {
+        setSnackbarDetails({
+            open: true,
+            message: 'Configuration saved to the browser!',
+            severity: 'success'
+        });
+
+        const timestamp = Date.now();
+        localStorage.setItem(`config_${timestamp}`, JSON.stringify(createData()));
+    };
+
+    const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
+        event.preventDefault();
+
+        // Combine data from all states and handle submission
+        const data: KujiraPriceFeederConfig = createData();
         const tomlData = json2toml(data);
-        console.log(tomlData)
 
         try {
             await navigator.clipboard.writeText(tomlData);
@@ -259,8 +272,11 @@ const MainForm: React.FC = () => {
                 <Hidden mdDown>
                     <Grid item md={3}>
                         <Box display="flex" justifyContent="flex-end">
-                            <Button type="submit" variant="contained" color="primary">
-                                Generate Configuration
+                            <Button type="submit" variant="contained" color="primary" style={{ marginRight: '10px' }}>
+                                Generate
+                            </Button>
+                            <Button variant="contained" color="secondary" onClick={saveConfig}>
+                                Save
                             </Button>
                         </Box>
                     </Grid>
@@ -343,13 +359,18 @@ const MainForm: React.FC = () => {
                 </Grid>
             )}
             <Hidden mdUp>
-                    <Grid item padding={4}>
-                        <Box display="flex" justifyContent="flex-end">
-                            <Button type="submit" variant="contained" color="primary" fullWidth>
-                                Generate Configuration
-                            </Button>
-                        </Box>
-                    </Grid>
+                <Grid item padding={4}>
+                    <Box display="flex" justifyContent="flex-end">
+                        <Button type="submit" variant="contained" color="primary" fullWidth>
+                            Generate Configuration
+                        </Button>
+                    </Box>
+                </Grid>
+                <Grid item padding={4}>
+                    <Button variant="contained" color="secondary" onClick={saveConfig}>
+                        Save Configuration
+                    </Button>
+                </Grid>
             </Hidden>
         </form>
     );
