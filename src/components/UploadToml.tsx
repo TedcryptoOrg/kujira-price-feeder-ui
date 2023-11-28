@@ -6,6 +6,7 @@ import { Box, Stack, Button, Grid, IconButton, Modal } from '@mui/material';
 import CustomSnackbar from "./CustomSnackBar";
 import InstructionsBox from "./upload/InstructionsBox";
 import HelpOutlineIcon from '@mui/icons-material/HelpOutline';
+import {KujiraPriceFeederConfig, ProviderContract, ProviderContractAddress} from "../interfaces";
 
 const UploadToml: React.FC = () => {
     const navigate = useNavigate();
@@ -38,6 +39,24 @@ const UploadToml: React.FC = () => {
         return `${day}/${month}/${year} ${hours}:${minutes}:${seconds}`;
     };
 
+    const parseToml = (tomlContent: string): KujiraPriceFeederConfig => {
+        const parsed = toml.parse(tomlContent);
+
+        const conctractAddresses: [string, string][] = Object.entries(parsed.contract_addresses)
+        const providerContracts: ProviderContract[] = conctractAddresses.map(([name, addresses]) => {
+                const contractAddresses: ProviderContractAddress[] = Object.entries(addresses)
+                    .map(([denom, address]) => ({ denom, address } as ProviderContractAddress));
+
+            return { name, addresses: contractAddresses };
+        });
+
+        parsed.provider_contracts = providerContracts;
+
+        console.log(parsed);
+
+        return parsed;
+    }
+
     useEffect(() => {
         const keys = Object.keys(localStorage).filter(key => key.startsWith('config_'));
         setOriginalKeys(keys);
@@ -53,11 +72,14 @@ const UploadToml: React.FC = () => {
                 const tomlContent = e.target?.result;
                 if (typeof tomlContent === 'string') {
                     try {
-                        const json = toml.parse(tomlContent);
-                        console.log(json)
-
-                        navigate('/form', { state: { jsonData: json } });
+                        navigate('/form', { state: { jsonData: parseToml(tomlContent) } });
                     } catch (error) {
+                        setSnackbarDetails({
+                            open: true,
+                            message: 'Error parsing TOML. Make sure you have uploaded the right file',
+                            severity: 'error',
+                        })
+
                         console.error('Error parsing TOML:', error);
                     }
                 }
@@ -69,8 +91,7 @@ const UploadToml: React.FC = () => {
     const handlePasteAndParse = async () => {
         try {
             const clipboardContent = await navigator.clipboard.readText();
-            const json = toml.parse(clipboardContent);
-            navigate('/form', { state: { jsonData: json } });
+            navigate('/form', { state: { jsonData: parseToml(clipboardContent) } });
         } catch (error) {
             setSnackbarDetails({
                 open: true,

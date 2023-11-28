@@ -43,6 +43,16 @@ export interface Telemetry {
     type: string;
 }
 
+export interface ProviderContractAddress {
+    denom: string;
+    address: string;
+}
+
+export interface ProviderContract {
+    name: string;
+    addresses: ProviderContractAddress[];
+}
+
 export interface ProviderEndpoints {
     name: string;
     urls: string[];
@@ -77,4 +87,5 @@ export interface KujiraPriceFeederConfig extends GlobalConfig {
     deviation_thresholds: DeviationThresholds[];
     provider_min_overrides: ProviderMinOverrides[];
     currency_pairs: CurrencyPairs[];
+    provider_contracts: ProviderContract[];
 }
