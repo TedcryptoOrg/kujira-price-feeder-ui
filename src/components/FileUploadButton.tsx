@@ -13,7 +13,7 @@ const FileUploadButton: React.FC<FileUploadButtonProps> = ({ onFileSelect }) => 
     };
 
     return (
-        <div>
+        <>
             <input
                 ref={fileInputRef}
                 type="file"
@@ -29,7 +29,7 @@ const FileUploadButton: React.FC<FileUploadButtonProps> = ({ onFileSelect }) => 
             >
                 Upload TOML File
             </Button>
-        </div>
+        </>
     );
 };
 
