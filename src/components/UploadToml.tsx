@@ -2,12 +2,30 @@ import React, {ChangeEvent, useEffect, useState} from 'react';
 import toml from "toml";
 import { useNavigate } from 'react-router-dom';
 import FileUploadButton from "./FileUploadButton";
-import { Box, Stack, Button, Grid } from '@mui/material';
+import { Box, Stack, Button, Grid, IconButton, Modal } from '@mui/material';
+import CustomSnackbar from "./CustomSnackBar";
+import InstructionsBox from "./upload/InstructionsBox";
+import HelpOutlineIcon from '@mui/icons-material/HelpOutline';
 
 const UploadToml: React.FC = () => {
     const navigate = useNavigate();
+    const [open, setOpen] = useState(false);
     const [configs, setConfigs] = useState<string[]>([]);
     const [originalKeys, setOriginalKeys] = useState<string[]>([]);
+
+    const [snackbarDetails, setSnackbarDetails] = useState({
+        open: false,
+        message: '',
+        severity: 'success' as 'success' | 'error' | 'info' | 'warning',
+    });
+
+    const handleOpen = () => {
+        setOpen(true);
+    };
+
+    const handleClose = () => {
+        setOpen(false);
+    };
 
     const formatTimestamp = (timestamp: number) => {
         const date = new Date(timestamp);
@@ -48,6 +66,22 @@ const UploadToml: React.FC = () => {
         }
     };
 
+    const handlePasteAndParse = async () => {
+        try {
+            const clipboardContent = await navigator.clipboard.readText();
+            const json = toml.parse(clipboardContent);
+            navigate('/form', { state: { jsonData: json } });
+        } catch (error) {
+            setSnackbarDetails({
+                open: true,
+                message: 'Error parsing TOML. Make sure you have copied the right contents',
+                severity: 'error',
+            })
+
+            console.error('Error parsing TOML:', error);
+        }
+    };
+
     const handleContinueButtonClick = () => {
         navigate('/form');
     }
@@ -69,6 +103,11 @@ const UploadToml: React.FC = () => {
 
     return (
         <Grid container>
+            <CustomSnackbar
+                snackbarDetails={snackbarDetails}
+                setOpen={(open) => setSnackbarDetails(prev => ({ ...prev, open }))}
+                open={snackbarDetails.open}
+            />
             <Grid item xs={12}>
                 <Box display="flex" justifyContent="center" alignItems="center" height="100vh">
                     <Stack direction="column" spacing={2}>
@@ -98,6 +137,40 @@ const UploadToml: React.FC = () => {
                         >
                             Create new
                         </Button>
+
+                        <Box display="flex" justifyContent="center" alignItems="center">
+                            <Button
+                                variant="contained"
+                                color="primary"
+                                onClick={handlePasteAndParse}
+                                fullWidth
+                                sx={{ fontSize: 'large', padding: '10px 20px', marginRight: '10px' }} // Adjust the values as needed
+                            >
+                                Use clipboard
+                            </Button>
+                            <IconButton onClick={handleOpen}>
+                                <HelpOutlineIcon />
+                            </IconButton>
+                        </Box>
+
+                        <Modal
+                            open={open}
+                            onClose={handleClose}
+                            aria-labelledby="modal-modal-title"
+                            aria-describedby="modal-modal-description"
+                        >
+                            <Box sx={{
+                                position: 'absolute',
+                                top: '50%',
+                                left: '50%',
+                                transform: 'translate(-50%, -50%)',
+                                bgcolor: 'rgba(0, 0, 0, 0.9)', // Change the alpha value to adjust the opacity
+                                boxShadow: 24,
+                                p: 4
+                            }}>
+                                <InstructionsBox />
+                            </Box>
+                        </Modal>
 
                         <FileUploadButton onFileSelect={handleFileChange} />
                     </Stack>

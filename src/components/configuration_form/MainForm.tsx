@@ -227,7 +227,16 @@ const MainForm: React.FC = () => {
 
         // Combine data from all states and handle submission
         const data: KujiraPriceFeederConfig = createData();
-        const tomlData = json2toml(data);
+        let tomlData = json2toml(globalConfig);
+        tomlData += json2toml({server: serverConfig});
+        tomlData += json2toml({account: accountConfig});
+        tomlData += json2toml({keyring: keyringConfig});
+        tomlData += json2toml({rpc: rpcConfig});
+        tomlData += json2toml({telemetry: telemetryConfig});
+        tomlData += json2toml({provider_endpoints: providerEndpointsData});
+        tomlData += json2toml({deviation_thresholds: deviationThresholdsData});
+        tomlData += json2toml({currency_pairs: currencyPairsData});
+        tomlData += json2toml({provider_min_overrides: providerMinOverridesData});
 
         try {
             await navigator.clipboard.writeText(tomlData);
