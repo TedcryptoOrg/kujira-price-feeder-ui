@@ -13,7 +13,7 @@ interface ProviderMinOverridesFormProps {
 const ProviderMinOverridesForm: React.FC<ProviderMinOverridesFormProps> = ({ config, onConfigChange }) => {
     const handleInputChange = (index: number, event: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
         const newOverrides = [...config];
-        newOverrides[index] = { ...newOverrides[index], [event.target.name]: event.target.value };
+        newOverrides[index] = { ...newOverrides[index], [event.target.name]: parseInt(event.target.value) };
         onConfigChange(newOverrides);
     };
 
